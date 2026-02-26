@@ -1,11 +1,14 @@
 import express from 'express'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import axios from "axios"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express()
+
+const NASA_BASE_URL = 'https://api.nasa.gov/neo/rest/v1';
 
 // Home route - HTML
 app.get('/', (req, res) => {
@@ -46,7 +49,30 @@ app.get('/api-data', (req, res) => {
 
 // Health check
 app.get('/healthz', (req, res) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() })
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString(), MESSAGE: "IT WORKS" })
 })
+
+app.get('/api/neo-feed', async (req, res) => {
+    try {
+        const { start_date, end_date } = req.query;
+
+        const response = await axios.get(`${NASA_BASE_URL}/feed`, {
+            params: {
+                start_date,
+                end_date,
+                api_key: 'LAitysI7iGzQxu3Z3JrUPFUaWedJNQdHKIokacX0'
+            }
+        });
+
+        res.json(response.data);
+
+    } catch (error) {
+        if ((error as any).response) {
+            return res.status((error as any)?.response?.status).json((error as any)?.response?.data);
+        }
+
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 export default app

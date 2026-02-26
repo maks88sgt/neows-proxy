@@ -8,6 +8,9 @@
   "license": "ISC",
   "dependencies": {
     "@types/express": "^5.0.0",
+    "axios": "^1.13.5",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
     "express": "^4.18.2"
   },
   "devDependencies": {

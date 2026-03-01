@@ -122,7 +122,7 @@ const swaggerDocument: OpenAPIV3.Document = {
   servers: [
     {
       url: process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
+        ? `https://neows-proxy.vercel.app`
         : "http://localhost:3000",
     },
   ],

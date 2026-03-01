@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
-import swaggerUi from "swagger-ui-express";
+import swaggerUiDist from "swagger-ui-dist";
 import {swaggerDocument} from "./swaggerSpec.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -140,7 +140,40 @@ app.get("/api/asteroids/:id", async (req, res) => {
 
 /* ---------------- OPENAPI DOCS ---------------- */
 
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+const swaggerPath = swaggerUiDist.getAbsoluteFSPath();
+
+app.use("/api/docs", express.static(swaggerPath));
+
+app.get("/api/docs", (req, res) => {
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>NASA NeoWs Proxy API Docs</title>
+        <link rel="stylesheet" type="text/css" href="/api/docs/swagger-ui.css" />
+      </head>
+      <body>
+        <div id="swagger-ui"></div>
+
+        <script src="/api/docs/swagger-ui-bundle.js"></script>
+        <script src="/api/docs/swagger-ui-standalone-preset.js"></script>
+        <script>
+          window.onload = () => {
+            window.ui = SwaggerUIBundle({
+              url: "/api/docs.json",
+              dom_id: "#swagger-ui",
+              presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+              ],
+              layout: "StandaloneLayout"
+            });
+          };
+        </script>
+      </body>
+    </html>
+  `);
+});
 
 app.get("/api/docs.json", (req, res) => {
   res.json(swaggerDocument);

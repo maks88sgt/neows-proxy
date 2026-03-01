@@ -170,7 +170,40 @@ const swaggerDocument: OpenAPIV3.Document = {
   },
 };
 
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get("/api/docs.json", (_, res) => {
+  res.json(swaggerDocument);
+});
+
+app.get("/api/docs", (_, res) => {
+  res.type("html").send(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>NASA NeoWs Proxy API Docs</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+
+  <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = () => {
+      SwaggerUIBundle({
+        url: "/api/docs.json",
+        dom_id: "#swagger-ui",
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  </script>
+</body>
+</html>
+  `);
+});
 
 /* ---------------- HEALTH ---------------- */
 

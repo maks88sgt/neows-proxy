@@ -2,6 +2,8 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import axios from "axios";
+import swaggerUi from "swagger-ui-express";
+import {swaggerDocument} from "./swaggerSpec.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,6 +12,8 @@ const app = express();
 
 const NASA_BASE_URL = "https://api.nasa.gov/neo/rest/v1";
 const NASA_API_KEY = "LAitysI7iGzQxu3Z3JrUPFUaWedJNQdHKIokacX0";
+
+
 
 // простейший in-memory cache
 const cache = new Map();
@@ -136,60 +140,10 @@ app.get("/api/asteroids/:id", async (req, res) => {
 
 /* ---------------- OPENAPI DOCS ---------------- */
 
-app.get("/api/docs", (req, res) => {
-  res.json({
-    openapi: "3.0.0",
-    info: {
-      title: "NASA NeoWs Proxy API",
-      version: "1.0.0",
-      description: "Proxy server for NASA Near Earth Object Web Service",
-    },
-    servers: [{ url: "https://your-vercel-domain.vercel.app" }],
-    paths: {
-      "/api/asteroids": {
-        get: {
-          summary: "Get list of asteroids",
-          parameters: [
-            {
-              name: "startDay",
-              in: "query",
-              required: false,
-              schema: { type: "string", format: "date" },
-            },
-            {
-              name: "endDay",
-              in: "query",
-              required: false,
-              schema: { type: "string", format: "date" },
-            },
-          ],
-          responses: {
-            "200": {
-              description: "List of asteroids",
-            },
-          },
-        },
-      },
-      "/api/asteroids/{id}": {
-        get: {
-          summary: "Get asteroid details",
-          parameters: [
-            {
-              name: "id",
-              in: "path",
-              required: true,
-              schema: { type: "string" },
-            },
-          ],
-          responses: {
-            "200": {
-              description: "Asteroid details",
-            },
-          },
-        },
-      },
-    },
-  });
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.get("/api/docs.json", (req, res) => {
+  res.json(swaggerDocument);
 });
 
 /* ---------------- HEALTH ---------------- */

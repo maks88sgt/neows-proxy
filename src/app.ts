@@ -2,8 +2,12 @@ import express from "express";
 import axios from "axios";
 import swaggerUi from "swagger-ui-express";
 import { OpenAPIV3 } from "openapi-types";
+import cors from "cors"; 
 
 const app = express();
+
+app.use(
+  cors())
 
 const NASA_BASE_URL = "https://api.nasa.gov/neo/rest/v1";
 const NASA_API_KEY = process.env.NASA_API_KEY || "DEMO_KEY";
